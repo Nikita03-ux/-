@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Учет заявок сайтов — презентация</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+        background: linear-gradient(150deg, #f4f7fd 0%, #eaf0fb 45%, #e3ebf9 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        color: #1f2a44;
+    }
+
+    .stage {
+        max-width: 1120px;
+        width: 100%;
+        position: relative;
+    }
+
+    /* Слайды */
+    .slide {
+        display: none;
+        background: #ffffff;
+        border: 1px solid #dfe7f5;
+        border-radius: 36px;
+        padding: 44px 52px 38px;
+        box-shadow:
+            0 30px 60px -30px rgba(40, 70, 140, 0.28),
+            0 4px 14px rgba(40, 70, 140, 0.06);
+        animation: fadeIn 0.35s ease;
+    }
+
+    .slide.active { display: block; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Шапка */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+
+    .badge {
+        padding: 8px 18px;
+        border-radius: 100px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+    }
+
+    .badge.done { background: #e8f0ff; border: 1px solid #c6d9ff; color: #2f5fd0; }
+    .badge.next { background: #fff3e0; border: 1px solid #ffd9a8; color: #b06a00; }
+
+    .tag {
+        font-size: 0.85rem;
+        color: #64748b;
+        background: #f1f5fb;
+        border: 1px solid #e2e8f4;
+        padding: 7px 16px;
+        border-radius: 40px;
+        font-weight: 600;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin-bottom: 10px;
+        color: #16213c;
+    }
+
+    .subhead {
+        font-size: 1.02rem;
+        color: #5b6b8c;
+        border-left: 4px solid #4e7aff;
+        padding: 6px 0 6px 18px;
+        line-height: 1.5;
+        margin-bottom: 30px;
+        background: linear-gradient(90deg, rgba(78, 122, 255, 0.07), transparent);
+        border-radius: 0 10px 10px 0;
+    }
+
+    .subhead.amber {
+        border-left-color: #e8a33d;
+        background: linear-gradient(90deg, rgba(232, 163, 61, 0.08), transparent);
+    }
+
+    /* ---- Слайд 1: работы ---- */
+    .works-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 26px;
+    }
+
+    .work-card {
+        background: #f8faff;
+        border: 1px solid #e3eaf7;
+        border-radius: 20px;
+        padding: 20px 22px;
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        transition: 0.2s ease;
+    }
+
+    .work-card:hover {
+        border-color: #b8cdfa;
+        background: #ffffff;
+        box-shadow: 0 12px 26px -16px rgba(40, 80, 180, 0.35);
+        transform: translateY(-2px);
+    }
+
+    .work-icon {
+        font-size: 1.4rem;
+        flex-shrink: 0;
+        width: 44px; height: 44px;
+        display: flex; align-items: center; justify-content: center;
+        background: #e8f0ff;
+        border-radius: 14px;
+        border: 1px solid #d3e0fd;
+    }
+
+    .work-title {
+        font-size: 0.95rem;
+        font-weight: 650;
+        color: #1f2a44;
+        line-height: 1.35;
+        margin-bottom: 8px;
+    }
+
+    .work-result {
+        font-size: 0.87rem;
+        color: #5b6b8c;
+        line-height: 1.45;
+        margin-bottom: 10px;
+    }
+
+    .link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #2f5fd0;
+        text-decoration: none;
+        background: #eef4ff;
+        border: 1px solid #d6e4ff;
+        padding: 6px 14px;
+        border-radius: 30px;
+        transition: 0.18s ease;
+        margin: 4px 4px 0 0;
+    }
+
+    .link:hover { background: #dfeaff; border-color: #a9c4fb; color: #1d47ad; }
+    .link::after { content: "↗"; font-size: 0.85rem; }
+
+    .summary-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        background: linear-gradient(120deg, #eef4ff 0%, #e6f0fe 100%);
+        border: 1px solid #d3e0fd;
+        border-radius: 22px;
+        padding: 22px 26px;
+    }
+
+    .summary-item { text-align: center; flex: 1; min-width: 110px; }
+
+    .summary-item .num {
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: #1d47ad;
+        line-height: 1.1;
+    }
+
+    .summary-item .label {
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: #64748b;
+        font-weight: 600;
+        margin-top: 5px;
+    }
+
+    .summary-divider { width: 1px; height: 40px; background: #cdddfa; }
+
+    /* ---- Слайд 2: задачи ---- */
+    .priority-section { margin-bottom: 20px; }
+
+    .priority-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.9px;
+        padding: 6px 14px;
+        border-radius: 30px;
+        margin-bottom: 12px;
+    }
+
+    .priority-label .p-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    .p1 { background: #fdeef0; color: #c0394b; border: 1px solid #f8d3d8; }
+    .p1 .p-dot { background: #e05a6d; box-shadow: 0 0 8px #e05a6d; }
+
+    .p2 { background: #eef4ff; color: #2f5fd0; border: 1px solid #d6e4ff; }
+    .p2 .p-dot { background: #4e7aff; box-shadow: 0 0 8px #4e7aff; }
+
+    .p3 { background: #eefaf3; color: #1f8f5f; border: 1px solid #c9f0dd; }
+    .p3 .p-dot { background: #22b573; box-shadow: 0 0 8px #22b573; }
+
+    .tasks-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    .task-card {
+        background: #f8faff;
+        border: 1px solid #e3eaf7;
+        border-radius: 18px;
+        padding: 18px 20px;
+        transition: 0.2s ease;
+    }
+
+    .task-card:hover {
+        border-color: #b8cdfa;
+        background: #ffffff;
+        box-shadow: 0 12px 26px -16px rgba(40, 80, 180, 0.35);
+        transform: translateY(-2px);
+    }
+
+    .task-card h4 {
+        font-size: 0.93rem;
+        font-weight: 650;
+        color: #1f2a44;
+        line-height: 1.35;
+        margin-bottom: 8px;
+    }
+
+    .task-card p {
+        font-size: 0.85rem;
+        color: #5b6b8c;
+        line-height: 1.45;
+    }
+
+    /* ---- Навигация ---- */
+    .nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+        margin-top: 22px;
+    }
+
+    .nav button {
+        font-family: inherit;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #2f5fd0;
+        background: #ffffff;
+        border: 1px solid #d6e4ff;
+        padding: 10px 22px;
+        border-radius: 40px;
+        cursor: pointer;
+        transition: 0.18s ease;
+        box-shadow: 0 6px 16px -10px rgba(40, 80, 180, 0.4);
+    }
+
+    .nav button:hover:not(:disabled) {
+        background: #eef4ff;
+        border-color: #a9c4fb;
+    }
+
+    .nav button:disabled { opacity: 0.4; cursor: default; }
+
+    .nav .dots { display: flex; gap: 8px; }
+
+    .nav .dot-btn {
+        width: 10px; height: 10px;
+        border-radius: 50%;
+        border: none;
+        background: #cdddfa;
+        padding: 0;
+        cursor: pointer;
+        box-shadow: none;
+    }
+
+    .nav .dot-btn.active {
+        background: #4e7aff;
+        transform: scale(1.2);
+        box-shadow: 0 0 10px rgba(78, 122, 255, 0.6);
+    }
+
+    /* ---- Футер ---- */
+    .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 14px;
+        padding-top: 18px;
+        margin-top: 22px;
+        border-top: 1px solid #e7edf8;
+        font-size: 0.84rem;
+        color: #7183a3;
+    }
+
+    .footer-stages {
+        display: flex; gap: 22px; flex-wrap: wrap;
+    }
+
+    .footer-stages span { display: flex; align-items: center; gap: 7px; }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .dot.red { background: #e05a6d; }
+    .dot.blue { background: #4e7aff; }
+    .dot.green { background: #22b573; }
+
+    /* ---- Адаптив ---- */
+    @media (max-width: 820px) {
+        .slide { padding: 30px 24px; border-radius: 28px; }
+        h1 { font-size: 1.85rem; }
+        .works-grid, .tasks-grid { grid-template-columns: 1fr; }
+        .summary-divider { display: none; }
+        .footer { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (max-width: 480px) {
+        h1 { font-size: 1.5rem; }
+        .summary-item .num { font-size: 1.35rem; }
+        .nav button { padding: 8px 16px; font-size: 0.82rem; }
+    }
+</style>
+</head>
+<body>
+<div class="stage">
+
+    <!-- ========== СЛАЙД 1 ========== -->
+    <section class="slide active" id="slide-1">
+        <div class="header">
+            <span class="badge done">✅ Выполненные работы</span>
+            <span class="tag">Результат на 18.09.2026</span>
+        </div>
+
+        <h1>Учет заявок сайтов: что уже сделано</h1>
+        <div class="subhead">
+            Проект переведён из ручного сбора в автоматический учёт: создан журнал писем, помесячная сводка,
+            справочник источников и скрипт V9 с защитой от повторного начисления после сбоя.
+        </div>
+
+        <div class="works-grid">
+            <div class="work-card">
+                <div class="work-icon">🗂️</div>
+                <div>
+                    <div class="work-title">Анализ страниц и клиентских каналов ТК КИТ</div>
+                    <div class="work-result">Сформирован реестр: 136 URL и 12 групп динамических страниц.</div>
+                    <a class="link" href="https://docs.google.com/spreadsheets/d/1KnGf4tqqHjBYD7GsVfVcQmappo9cg4xe4elM404G3es/edit?gid=329536728#gid=329536728" target="_blank" rel="noopener">Реестр страниц</a>
+                </div>
+            </div>
+
+            <div class="work-card">
+                <div class="work-icon">🧭</div>
+                <div>
+                    <div class="work-title">Карта текущей маршрутизации заявок (AS-IS)</div>
+                    <div class="work-result">94 маршрута со статусами проверки и выявленными пробелами.</div>
+                    <a class="link" href="https://docs.google.com/spreadsheets/d/1h8hCF8RS8rSxprEqz-q51ewQ_FeKHeYgDE1p0UzTzMQ/edit?gid=1357343728#gid=1357343728" target="_blank" rel="noopener">Карта маршрутизации</a>
+                </div>
+            </div>
+
+            <div class="work-card">
+                <div class="work-icon">📬</div>
+                <div>
+                    <div class="work-title">Доступ к резервному почтовому ящику</div>
+                    <div class="work-result">Для сбора и учёта заявок с сайтов компании.</div>
+                    <a class="link" href="https://mail.google.com/mail/u/2/#inbox" target="_blank" rel="noopener">poctakitrezerv@gmail.com</a>
+                </div>
+            </div>
+
+            <div class="work-card">
+                <div class="work-icon">📊</div>
+                <div>
+                    <div class="work-title">Таблица «Учет заявок сайтов»</div>
+                    <div class="work-result">Журнал писем, помесячная сводка и справочник источников.</div>
+                    <a class="link" href="https://docs.google.com/spreadsheets/d/1K1Sfvv5TDsxnbfqvn2BGyYMP_mWECOgvtkEfOtp4L08/edit?gid=2136773087#gid=2136773087" target="_blank" rel="noopener">Сводка 2026</a>
+                </div>
+            </div>
+
+            <div class="work-card">
+                <div class="work-icon">⚙️</div>
+                <div>
+                    <div class="work-title">Скрипт V9 для автоматического сбора и классификации</div>
+                    <div class="work-result">Защита от повторного начисления заявок после сбоя.</div>
+                    <a class="link" href="https://docs.google.com/spreadsheets/d/1K1Sfvv5TDsxnbfqvn2BGyYMP_mWECOgvtkEfOtp4L08/edit?gid=648966691#gid=648966691" target="_blank" rel="noopener">Код скрипта V9</a>
+                </div>
+            </div>
+
+            <div class="work-card">
+                <div class="work-icon">🔁</div>
+                <div>
+                    <div class="work-title">Ежедневное обновление и контрольная сверка</div>
+                    <div class="work-result">Целевые заявки совпадают с итогами сводки; неучтённых записей нет.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-bar">
+            <div class="summary-item">
+                <div class="num">61 804</div>
+                <div class="label">Письма в журнале</div>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-item">
+                <div class="num">25 999</div>
+                <div class="label">Целевых заявок</div>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-item">
+                <div class="num">169</div>
+                <div class="label">Источников в сводке</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div><span class="dot green"></span>Учет заявок сайтов · Google Sheets + Apps Script</div>
+            <div>Слайд 1 из 2 · Выполненные работы</div>
+        </div>
+    </section>
+
+    <!-- ========== СЛАЙД 2 ========== -->
+    <section class="slide" id="slide-2">
+        <div class="header">
+            <span class="badge next">🎯 Дальнейшие действия</span>
+            <span class="tag">План развития проекта</span>
+        </div>
+
+        <h1>Что предстоит сделать дальше</h1>
+        <div class="subhead amber">
+            Сейчас важно подтвердить надёжность учёта, проверить качество данных и закрыть пробелы в маршрутизации.
+            После этого можно расширять отчётность до оценки обработки заявок и продаж.
+        </div>
+
+        <div class="priority-section">
+            <span class="priority-label p1"><span class="p-dot"></span>Первоочередно</span>
+            <div class="tasks-grid">
+                <div class="task-card">
+                    <h4>Проверить регулярную работу V9</h4>
+                    <p>Подтвердить несколько успешных запусков по расписанию, отсутствие неучтённых заявок и совпадение месячных итогов. Настроить уведомления об ошибках.</p>
+                    <a class="link" href="https://docs.google.com/spreadsheets/d/1K1Sfvv5TDsxnbfqvn2BGyYMP_mWECOgvtkEfOtp4L08/edit?gid=648966691#gid=648966691" target="_blank" rel="noopener">Код скрипта V9</a>
+                </div>
+
+                <div class="task-card">
+                    <h4>Проверить спорные исторические заявки</h4>
+                    <p>Разобрать серию из 3 078 писем и 13 неполных записей по оригиналам. Подтвердить, какие обращения реальные, тестовые или повторные.</p>
+                    <a class="link" href="https://mail.google.com/mail/u/2/#inbox" target="_blank" rel="noopener">Резервная почта</a>
+                    <a class="link" href="https://docs.google.com/spreadsheets/d/1K1Sfvv5TDsxnbfqvn2BGyYMP_mWECOgvtkEfOtp4L08/edit?gid=2136773087#gid=2136773087" target="_blank" rel="noopener">Сводка 2026</a>
+                </div>
+
+                <div class="task-card">
+                    <h4>Доработать полноту и точность загрузки</h4>
+                    <p>Добавить восстановление пропущенного периода после простоя более трёх дней. Исправить замечания к дедупликации и сопоставлению источников.</p>
+                    <a class="link" href="https://docs.google.com/spreadsheets/d/1K1Sfvv5TDsxnbfqvn2BGyYMP_mWECOgvtkEfOtp4L08/edit?gid=2136773087#gid=2136773087" target="_blank" rel="noopener">Сводка 2026</a>
+                </div>
+
+                <div class="task-card">
+                    <h4>Подтвердить и исправить маршруты поступления заявок</h4>
+                    <p>Проверить цепочку «форма → получатель → подразделение → место фиксации» контрольными отправками. Начать с маршрутов без подтверждённого получателя.</p>
+                    <a class="link" href="https://docs.google.com/spreadsheets/d/1h8hCF8RS8rSxprEqz-q51ewQ_FeKHeYgDE1p0UzTzMQ/edit?gid=1357343728#gid=1357343728" target="_blank" rel="noopener">Карта маршрутизации</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="priority-section">
+            <span class="priority-label p2"><span class="p-dot"></span>Следующий этап</span>
+            <div class="tasks-grid">
+                <div class="task-card">
+                    <h4>Связать реестры и закрепить ответственных</h4>
+                    <p>Сопоставить страницы, формы, маршруты и источники сводки. Для каждого источника указать ответственного, рабочий адрес и место учёта.</p>
+                    <a class="link" href="https://docs.google.com/spreadsheets/d/1KnGf4tqqHjBYD7GsVfVcQmappo9cg4xe4elM404G3es/edit?gid=329536728#gid=329536728" target="_blank" rel="noopener">Реестр страниц</a>
+                </div>
+
+                <div class="task-card">
+                    <h4>Организовать контроль обработки заявок</h4>
+                    <p>Согласовать единые статусы, сроки первого контакта и правила передачи между подразделениями. Фиксировать результат обработки и причину отказа.</p>
+                </div>
+
+                <div class="task-card">
+                    <h4>Установить порядок сопровождения системы</h4>
+                    <p>Назначить владельца системы и порядок проверки новых источников, изменения правил классификации, резервного копирования.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="priority-section" style="margin-bottom: 0;">
+            <span class="priority-label p3"><span class="p-dot"></span>Развитие</span>
+            <div class="tasks-grid">
+                <div class="task-card">
+                    <h4>Проверить охват остальных каналов</h4>
+                    <p>Определить, какие обращения из телефонии, чатов, TWIN и CRM уже попадают в почтовый учёт, а какие отсутствуют. Подключать без повторного подсчёта.</p>
+                </div>
+
+                <div class="task-card">
+                    <h4>Расширить аналитику эффективности</h4>
+                    <p>Проверить цели отправки форм в веб-аналитике, сохранение рекламного источника и связь заявки с заказом. Добавить конверсию и стоимость заявки.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-stages">
+                <span><span class="dot red"></span> Надёжность данных</span>
+                <span><span class="dot blue"></span> Маршруты и ответственные</span>
+                <span><span class="dot green"></span> Аналитика и развитие</span>
+            </div>
+            <div>Слайд 2 из 2 · Дальнейшие действия</div>
+        </div>
+    </section>
+
+    <!-- ========== НАВИГАЦИЯ ========== -->
+    <div class="nav">
+        <button id="prevBtn" onclick="goTo(0)">← Назад</button>
+        <div class="dots">
+            <button class="dot-btn active" onclick="goTo(0)" aria-label="Слайд 1"></button>
+            <button class="dot-btn" onclick="goTo(1)" aria-label="Слайд 2"></button>
+        </div>
+        <button id="nextBtn" onclick="goTo(1)">Вперёд →</button>
+    </div>
+
+</div>
+
+<script>
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot-btn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let current = 0;
+
+    function goTo(index) {
+        if (index < 0 || index >= slides.length) return;
+        slides[current].classList.remove('active');
+        dots[current].classList.remove('active');
+        current = index;
+        slides[current].classList.add('active');
+        dots[current].classList.add('active');
+        prevBtn.disabled = current === 0;
+        nextBtn.disabled = current === slides.length - 1;
+    }
+
+    // Клавиатура: стрелки влево / вправо
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') goTo(current + 1);
+        if (e.key === 'ArrowLeft')  goTo(current - 1);
+    });
+
+    // Инициализация
+    prevBtn.disabled = true;
+</script>
+</body>
+</html>
